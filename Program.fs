@@ -28,7 +28,7 @@ let findPath () =
             info.CreateNoWindow <- true
             Process.Start(info).StandardOutput.ReadToEnd().Trim()
 
-    $"/home/{name}/mplanner/"
+    $"/home/{name}/mplanner"
 
 let latestEntry path =
     Directory.GetFiles(path)
