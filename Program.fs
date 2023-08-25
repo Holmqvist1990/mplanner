@@ -19,7 +19,7 @@ open Todo
 open System.IO
 open System.Diagnostics
 
-let findPath () =
+let findEntriesFolder () =
     let name =
         ProcessStartInfo("bash", "-c \"echo $USER\"")
         |> fun info ->
@@ -38,15 +38,15 @@ let latestEntry path =
     |> Option.map File.ReadAllLines
     |> Option.map Array.toList
 
-let path = findPath ()
+let entriesFolder = findEntriesFolder ()
 let now = System.DateTime.UtcNow.ToString "yyyy-MM-dd"
-let filepath = $"{path}/{now}.md"
+let latestFilePath = $"{entriesFolder}/{now}.md"
 let header = $"# {now}"
 
 let writeIfNotExists path (lines: string list) =
     match File.Exists(path) with
-    | true -> File.WriteAllLines(filepath, lines)
-    | false -> ()
+    | true -> ()
+    | false -> File.WriteAllLines(path, lines)
 
 let writeTodoFile path (todos: string list list) =
     [ [ header ] ] @ todos
@@ -54,8 +54,8 @@ let writeTodoFile path (todos: string list list) =
     |> List.collect id
     |> writeIfNotExists path
 
-match latestEntry path with
-| Some entry -> entry |> parseTodos |> writeTodoFile path
-| None -> writeIfNotExists filepath [ header ]
+match latestEntry entriesFolder with
+| Some entry -> entry |> parseTodos |> writeTodoFile latestFilePath
+| None -> writeIfNotExists latestFilePath [ header ]
 
-Process.Start("xdg-open", filepath) |> ignore
+Process.Start("xdg-open", latestFilePath) |> ignore
