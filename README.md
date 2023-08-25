@@ -20,6 +20,7 @@ Opens the newly created file with xdg-open.
 ```
 
 ## Requirements
+* Linux/WSL (or replace the `xdg-open` call to the equivalent in your OS)
 * [DOTNET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 * [Make](https://www.gnu.org/software/make/)
 
