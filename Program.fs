@@ -16,43 +16,8 @@
 *)
 
 open Todo
-open System.IO
+open Files
 open System.Diagnostics
-
-let findEntriesFolder () =
-    let name =
-        ProcessStartInfo("bash", "-c \"echo $USER\"")
-        |> fun info ->
-            info.RedirectStandardOutput <- true
-            info.UseShellExecute <- false
-            info.CreateNoWindow <- true
-            Process.Start(info).StandardOutput.ReadToEnd().Trim()
-
-    $"/home/{name}/mplanner"
-
-let latestEntry path =
-    Directory.GetFiles(path)
-    |> Array.filter (fun name -> name.Contains(".md"))
-    |> Array.sort
-    |> Array.tryLast
-    |> Option.map File.ReadAllLines
-    |> Option.map Array.toList
-
-let entriesFolder = findEntriesFolder ()
-let now = System.DateTime.UtcNow.ToString "yyyy-MM-dd"
-let latestFilePath = $"{entriesFolder}/{now}.md"
-let header = $"# {now}"
-
-let writeIfNotExists path (lines: string list) =
-    match File.Exists(path) with
-    | true -> ()
-    | false -> File.WriteAllLines(path, lines)
-
-let writeTodoFile path (todos: string list list) =
-    [ [ header ] ] @ todos
-    |> List.map (fun list -> list @ [ "" ])
-    |> List.collect id
-    |> writeIfNotExists path
 
 match latestEntry entriesFolder with
 | Some entry -> entry |> parseTodos |> writeTodoFile latestFilePath
